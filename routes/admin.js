@@ -675,43 +675,7 @@ router.delete('/users/:id', superAdmin, async (req, res) => {
     }
 });
 
-// ==================== SPONSORS (Super Admin) ====================
 
-// @route   GET /api/admin/sponsors
-router.get('/sponsors', superAdmin, async (req, res) => {
-    try {
-        const sponsors = await Sponsor.findAll({ order: [['order', 'ASC']] });
-        res.json(sponsors.map(s => ({ ...s.toJSON(), _id: s.id, logoUrl: s.logoUrl })));
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// @route   POST /api/admin/sponsors
-router.post('/sponsors', superAdmin, uploadSponsor.single('logo'), async (req, res) => {
-    try {
-        const { name, category, order } = req.body;
-        const sponsor = await Sponsor.create({
-            name,
-            category,
-            order: order || 0,
-            logo: req.file?.filename || null
-        });
-        res.status(201).json({ ...sponsor.toJSON(), _id: sponsor.id, logoUrl: sponsor.logoUrl });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// @route   DELETE /api/admin/sponsors/:id
-router.delete('/sponsors/:id', superAdmin, async (req, res) => {
-    try {
-        await Sponsor.destroy({ where: { id: req.params.id } });
-        res.json({ message: 'Sponsor deleted' });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
 
 // ==================== PHOTOGRAPHERS (Super Admin) ====================
 

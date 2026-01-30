@@ -60,7 +60,7 @@ router.post('/create-token', async (req, res) => {
                 id: item.id.toString(),
                 price: parseInt(item.price),
                 quantity: 1,
-                name: `Foto #${item.snapshot_start_no || 'N/A'}`
+                name: `Foto #${item.snap_photo_start_no || 'N/A'}`
             }))
         };
 

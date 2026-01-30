@@ -17,7 +17,7 @@ const app = express();
 // Connect to MySQL
 connectDB();
 
-// Middleware
+// CORS Configuration
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
@@ -28,23 +28,70 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (mobile apps, curl, etc.)
+        // Allow requests with no origin (mobile apps, curl, Postman, etc.)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(null, true); // Allow all origins in production for flexibility
+
+        // Check if origin is in allowed list
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
         }
+
+        // In development, allow all origins
+        if (process.env.NODE_ENV === 'development') {
+            return callback(null, true);
+        }
+
+        // Reject unauthorized origins in production
+        return callback(new Error('Not allowed by CORS'), false);
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Middleware
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Request logging in development
+if (process.env.NODE_ENV === 'development') {
+    app.use((req, res, next) => {
+        console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+        next();
+    });
+}
 
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API Routes (with /api prefix - plural)
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date(),
+        uptime: process.uptime()
+    });
+});
+
+// Root route - API info
+app.get('/', (req, res) => {
+    res.json({
+        message: 'RacePhoto API Server',
+        version: '1.0.0',
+        status: 'running',
+        endpoints: {
+            auth: '/api/auth',
+            events: '/api/events',
+            photos: '/api/photos',
+            orders: '/api/orders',
+            payment: '/api/payment',
+            admin: '/api/admin',
+            health: '/health'
+        }
+    });
+});
+
+// API Routes - using consistent /api prefix
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/photos', photoRoutes);
@@ -52,61 +99,46 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
-// API Routes (with /api prefix - singular aliases)
-app.use('/api/event', eventRoutes);
-app.use('/api/photo', photoRoutes);
-app.use('/api/order', orderRoutes);
-
-// API Routes (without /api prefix for api.geezplay.site - plural)
-app.use('/auth', authRoutes);
-app.use('/events', eventRoutes);
-app.use('/photos', photoRoutes);
-app.use('/orders', orderRoutes);
-app.use('/payment', paymentRoutes);
-app.use('/admin', adminRoutes);
-
-// API Routes (without /api prefix - singular aliases)
-app.use('/event', eventRoutes);
-app.use('/photo', photoRoutes);
-app.use('/order', orderRoutes);
-
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date() });
-});
-
-// Root route
-app.get('/', (req, res) => {
-    res.json({
-        message: 'RacePhoto API Server',
-        version: '1.0.0',
-        status: 'running',
-        endpoints: {
-            auth: '/auth or /api/auth',
-            events: '/events or /api/events',
-            photos: '/photos or /api/photos',
-            orders: '/orders or /api/orders',
-            payment: '/payment or /api/payment',
-            admin: '/admin or /api/admin',
-            health: '/health or /api/health'
-        }
+// 404 handler for undefined routes
+app.use((req, res, next) => {
+    res.status(404).json({
+        success: false,
+        message: `Route ${req.method} ${req.originalUrl} not found`
     });
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date() });
-});
-
-// Error handler
+// Global error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error('Error:', err.message);
+    if (process.env.NODE_ENV === 'development') {
+        console.error(err.stack);
+    }
+
+    // Handle CORS errors
+    if (err.message === 'Not allowed by CORS') {
+        return res.status(403).json({
+            success: false,
+            message: 'CORS policy: Origin not allowed'
+        });
+    }
+
     res.status(err.status || 500).json({
+        success: false,
         message: err.message || 'Internal Server Error',
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     });
 });
 
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`
+╔════════════════════════════════════════════╗
+║     RacePhoto API Server Started           ║
+╠════════════════════════════════════════════╣
+║  Port: ${PORT}                                ║
+║  Mode: ${(process.env.NODE_ENV || 'development').padEnd(10)}                     ║
+║  Time: ${new Date().toLocaleString()}       
+╚════════════════════════════════════════════╝
+    `);
 });
