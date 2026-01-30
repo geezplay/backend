@@ -37,7 +37,10 @@ const sequelize = new Sequelize(
     dialectOptions: {
       connectTimeout: 60000,
       // For Hostinger MySQL compatibility
-      charset: 'utf8mb4'
+      charset: 'utf8mb4',
+      // Force IPv4 to avoid ::1 (IPv6) connection issues
+      socketPath: null,
+      flags: '-FOUND_ROWS'
     },
     retry: {
       max: 3
