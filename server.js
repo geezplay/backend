@@ -44,13 +44,24 @@ app.use(express.urlencoded({ extended: true }));
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API Routes
+// API Routes (with /api prefix)
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/photos', photoRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+
+// API Routes (without /api prefix for api.geezplay.site)
+app.use('/auth', authRoutes);
+app.use('/events', eventRoutes);
+app.use('/photos', photoRoutes);
+app.use('/orders', orderRoutes);
+app.use('/payment', paymentRoutes);
+app.use('/admin', adminRoutes);
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date() });
+});
 
 // Root route
 app.get('/', (req, res) => {
@@ -59,13 +70,13 @@ app.get('/', (req, res) => {
         version: '1.0.0',
         status: 'running',
         endpoints: {
-            auth: '/api/auth',
-            events: '/api/events',
-            photos: '/api/photos',
-            orders: '/api/orders',
-            payment: '/api/payment',
-            admin: '/api/admin',
-            health: '/api/health'
+            auth: '/auth or /api/auth',
+            events: '/events or /api/events',
+            photos: '/photos or /api/photos',
+            orders: '/orders or /api/orders',
+            payment: '/payment or /api/payment',
+            admin: '/admin or /api/admin',
+            health: '/health or /api/health'
         }
     });
 });
