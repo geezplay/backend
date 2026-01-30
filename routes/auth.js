@@ -5,6 +5,20 @@ const { protect, generateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
+// @route   GET /api/auth
+// @desc    Get auth endpoints info
+router.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Auth API',
+        endpoints: {
+            login: 'POST /auth/login',
+            logout: 'POST /auth/logout',
+            me: 'GET /auth/me (requires token)'
+        }
+    });
+});
+
 // @route   POST /api/auth/login
 // @desc    Login user
 router.post('/login', async (req, res) => {
