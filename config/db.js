@@ -16,9 +16,9 @@ const dbConfig = {
 console.log('Database Config:', dbConfig);
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'racephoto',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '',
+  process.env.DB_NAME || 'u194239260_gp_app',
+  process.env.DB_USER || 'u194239260_gp_adm',
+  process.env.DB_PASSWORD || 'Akudika133@',
   {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT) || 3306,
