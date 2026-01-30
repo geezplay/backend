@@ -19,6 +19,20 @@ router.get('/', (req, res) => {
     });
 });
 
+// @route   GET /api/auth/login
+// @desc    Info for login endpoint
+router.get('/login', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Login endpoint - use POST method',
+        method: 'POST',
+        body: {
+            email: 'string (required)',
+            password: 'string (required)'
+        }
+    });
+});
+
 // @route   POST /api/auth/login
 // @desc    Login user
 router.post('/login', async (req, res) => {
