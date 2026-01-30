@@ -117,8 +117,15 @@ router.get('/', async (req, res) => {
             brand
         });
     } catch (error) {
-        console.error('Get events error:', error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('=== GET /events Error ===');
+        console.error('Error Name:', error.name);
+        console.error('Error Message:', error.message);
+        console.error('Error Stack:', error.stack);
+        res.status(500).json({
+            message: 'Server error',
+            error: error.message,
+            name: error.name
+        });
     }
 });
 
