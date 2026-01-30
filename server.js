@@ -91,13 +91,26 @@ app.get('/', (req, res) => {
     });
 });
 
-// API Routes - using consistent /api prefix
+// API Routes - with /api prefix
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/photos', photoRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+
+// API Routes - without /api prefix (for api.geezplay.site production)
+app.use('/auth', authRoutes);
+app.use('/events', eventRoutes);
+app.use('/photos', photoRoutes);
+app.use('/orders', orderRoutes);
+app.use('/payment', paymentRoutes);
+app.use('/admin', adminRoutes);
+
+// Singular aliases (backward compatibility)
+app.use('/event', eventRoutes);
+app.use('/photo', photoRoutes);
+app.use('/order', orderRoutes);
 
 // 404 handler for undefined routes
 app.use((req, res, next) => {
