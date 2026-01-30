@@ -1,6 +1,15 @@
 // Database connection config
 const { Sequelize } = require('sequelize');
 
+// Log environment for debugging
+console.log('Database Config:', {
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 3306,
+  database: process.env.DB_NAME || 'racephoto',
+  user: process.env.DB_USER || 'root',
+  // Don't log password for security
+});
+
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'racephoto',
   process.env.DB_USER || 'root',
@@ -19,6 +28,9 @@ const sequelize = new Sequelize(
     define: {
       timestamps: true,
       underscored: true
+    },
+    dialectOptions: {
+      connectTimeout: 60000
     }
   }
 );
@@ -33,7 +45,11 @@ const connectDB = async () => {
     console.log('Database synced');
   } catch (error) {
     console.error('MySQL connection error:', error.message);
-    process.exit(1);
+    console.error('Full error:', error);
+    // Don't exit in production, let the app run and retry
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
   }
 };
 
