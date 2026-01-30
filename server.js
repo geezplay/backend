@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API Routes (with /api prefix)
+// API Routes (with /api prefix - plural)
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/photos', photoRoutes);
@@ -52,13 +52,24 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
-// API Routes (without /api prefix for api.geezplay.site)
+// API Routes (with /api prefix - singular aliases)
+app.use('/api/event', eventRoutes);
+app.use('/api/photo', photoRoutes);
+app.use('/api/order', orderRoutes);
+
+// API Routes (without /api prefix for api.geezplay.site - plural)
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
 app.use('/photos', photoRoutes);
 app.use('/orders', orderRoutes);
 app.use('/payment', paymentRoutes);
 app.use('/admin', adminRoutes);
+
+// API Routes (without /api prefix - singular aliases)
+app.use('/event', eventRoutes);
+app.use('/photo', photoRoutes);
+app.use('/order', orderRoutes);
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
 });
