@@ -20,7 +20,8 @@ const sequelize = new Sequelize(
   process.env.DB_USER || 'u194239260_gp_adm',
   process.env.DB_PASSWORD || 'Akudika133@',
   {
-    host: process.env.DB_HOST || 'localhost',
+    // Use 127.0.0.1 explicitly to force IPv4 (not 'localhost' which can resolve to ::1)
+    host: process.env.DB_HOST === 'localhost' ? '127.0.0.1' : (process.env.DB_HOST || '127.0.0.1'),
     port: parseInt(process.env.DB_PORT) || 3306,
     dialect: 'mysql',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
@@ -36,13 +37,7 @@ const sequelize = new Sequelize(
     },
     dialectOptions: {
       connectTimeout: 60000,
-      // For Hostinger MySQL compatibility
-      charset: 'utf8mb4',
-      // Force IPv4 to avoid ::1 (IPv6) connection issues
-      socketPath: null,
-      flags: '-FOUND_ROWS',
-      // Explicitly use IPv4
-      family: 4
+      charset: 'utf8mb4'
     },
     retry: {
       max: 3
