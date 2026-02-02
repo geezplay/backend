@@ -40,7 +40,9 @@ const sequelize = new Sequelize(
       charset: 'utf8mb4',
       // Force IPv4 to avoid ::1 (IPv6) connection issues
       socketPath: null,
-      flags: '-FOUND_ROWS'
+      flags: '-FOUND_ROWS',
+      // Explicitly use IPv4
+      family: 4
     },
     retry: {
       max: 3
