@@ -38,15 +38,19 @@ SiteSetting.getBrand = async function () {
     const contactEmail = await this.getValue('contact_email', '');
     const contactPhone = await this.getValue('contact_phone', '');
 
+    // Use full URL for cross-domain access
+    const baseUrl = process.env.BACKEND_URL || '';
+    const logoPath = siteLogo ? `${baseUrl}/uploads/settings/${siteLogo}` : null;
+
     return {
         site_name: siteName,
         tagline: tagline,
         contact_email: contactEmail,
         contact_phone: contactPhone,
-        logo_url: siteLogo ? `/uploads/settings/${siteLogo}` : null,
+        logo_url: logoPath,
         // Legacy aliases
         siteName,
-        siteLogo: siteLogo ? `/uploads/settings/${siteLogo}` : null
+        siteLogo: logoPath
     };
 };
 

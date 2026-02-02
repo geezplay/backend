@@ -76,11 +76,14 @@ router.get('/', async (req, res) => {
         });
         const brand = await SiteSetting.getBrand();
 
+        // Base URL for images (for cross-domain access)
+        const baseUrl = process.env.BACKEND_URL || '';
+
         // Map events with imageUrl
         const eventsWithUrl = events.map(e => ({
             ...e.toJSON(),
             _id: e.id,
-            imageUrl: e.imageUrl || (e.image ? `/uploads/events/${e.image}` : null)
+            imageUrl: e.imageUrl || (e.image ? `${baseUrl}/uploads/events/${e.image}` : null)
         }));
 
         // Group sponsors by category (matching Laravel structure)
@@ -93,8 +96,8 @@ router.get('/', async (req, res) => {
             sponsors[category].push({
                 ...s.toJSON(),
                 _id: s.id,
-                logo_url: s.logoUrl || (s.logo ? `/uploads/sponsors/${s.logo}` : null),
-                logoUrl: s.logoUrl || (s.logo ? `/uploads/sponsors/${s.logo}` : null)
+                logo_url: s.logoUrl || (s.logo ? `${baseUrl}/uploads/sponsors/${s.logo}` : null),
+                logoUrl: s.logoUrl || (s.logo ? `${baseUrl}/uploads/sponsors/${s.logo}` : null)
             });
         }
 
@@ -102,8 +105,8 @@ router.get('/', async (req, res) => {
         const photographersWithUrl = photographers.map(p => ({
             ...p.toJSON(),
             _id: p.id,
-            photoUrl: p.photoUrl || (p.photo ? `/uploads/photographers/${p.photo}` : null),
-            photo: p.photoUrl || (p.photo ? `/uploads/photographers/${p.photo}` : null),
+            photoUrl: p.photoUrl || (p.photo ? `${baseUrl}/uploads/photographers/${p.photo}` : null),
+            photo: p.photoUrl || (p.photo ? `${baseUrl}/uploads/photographers/${p.photo}` : null),
             gradient_from: p.gradient_from,
             gradient_to: p.gradient_to,
             gradientFrom: p.gradient_from,
