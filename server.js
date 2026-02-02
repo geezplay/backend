@@ -22,6 +22,8 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://gp.geezplay.site',
+    'https://geezplay.site',
+    'https://www.geezplay.site',
     'https://api.geezplay.site',
     process.env.FRONTEND_URL
 ].filter(Boolean);
